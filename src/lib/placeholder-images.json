@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "album-1",
+      "description": "Abstract vinyl record design",
+      "imageUrl": "https://images.unsplash.com/photo-1535992165812-68d1861aa71e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx2aW55bCUyMHJlY29yZHxlbnwwfHx8fDE3NTg2MDQ3Nzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vinyl record"
+    },
+    {
+      "id": "album-2",
+      "description": "Vintage microphone in a studio",
+      "imageUrl": "https://images.unsplash.com/photo-1485579149621-3123dd979885?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx2aW50YWdlJTIwbWljcm9waG9uZXxlbnwwfHx8fDE3NTg2MDMzNzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vintage microphone"
+    },
+    {
+      "id": "album-3",
+      "description": "Soulful singer silhouette",
+      "imageUrl": "https://images.unsplash.com/photo-1466691008519-df7e0d26ec6d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzaW5nZXIlMjBzaWxob3VldHRlfGVufDB8fHx8MTc1ODYxMzgyNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "singer silhouette"
+    },
+    {
+      "id": "album-4",
+      "description": "Close up of a record player needle",
+      "imageUrl": "https://images.unsplash.com/photo-1492284163710-4eef97892705?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxyZWNvcmQlMjBwbGF5ZXJ8ZW58MHx8fHwxNzU4NjA3MDMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "record player"
+    },
+    {
+      "id": "album-5",
+      "description": "A jazz band performing on stage",
+      "imageUrl": "https://images.unsplash.com/photo-1613412113463-72eef12e2844?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8amF6eiUyMGJhbmR8ZW58MHx8fHwxNzU4NjQyNTY1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "jazz band"
+    },
+    {
+      "id": "album-6",
+      "description": "Sheet music with musical notes",
+      "imageUrl": "https://images.unsplash.com/photo-1591025810539-a321000cda85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzaGVldCUyMG11c2ljfGVufDB8fHx8MTc1ODU5MDgyOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sheet music"
+    }
+  ]
 }
