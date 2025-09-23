@@ -18,9 +18,6 @@ export default function Header() {
           <Button variant="ghost" asChild>
             <Link href="/">Home</Link>
           </Button>
-          <Button variant="ghost" asChild>
-            <Link href="/recommendations">Recommendations</Link>
-          </Button>
           <Button asChild className="bg-primary hover:bg-accent hover:text-accent-foreground transition-colors">
             <Link href="/albums/add">Add Album</Link>
           </Button>

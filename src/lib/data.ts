@@ -74,10 +74,11 @@ export async function fetchAlbumById(id: string): Promise<Album | undefined> {
 
 export async function createAlbum(albumData: Omit<Album, 'id' | 'coverImageUrl'>): Promise<Album> {
   await simulateNetworkLatency();
+  const randomImage = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)];
   const newAlbum: Album = {
     ...albumData,
     id: (albums.length + 1).toString(),
-    coverImageUrl: `https://picsum.photos/seed/motown${albums.length + 1}/500/500`,
+    coverImageUrl: randomImage.imageUrl,
   };
   albums.push(newAlbum);
   return newAlbum;
