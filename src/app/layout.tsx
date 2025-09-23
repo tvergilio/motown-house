@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Motown House',
@@ -26,7 +27,8 @@ export default function RootLayout({
           {children}
         </main>
         <footer className="py-4 border-t">
-            <div className="container mx-auto text-center text-muted-foreground">
+            <div className="container mx-auto text-center text-muted-foreground flex flex-col items-center gap-2">
+                <Image src="https://storage.googleapis.com/aai-web-samples/parrotlet.png" alt="Blue Parrotlet" width={40} height={40} className="rounded-full" />
                 <p>&copy; {new Date().getFullYear()} Motown House. All Rights Reserved.</p>
             </div>
         </footer>
