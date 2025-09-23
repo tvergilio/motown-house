@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { createAlbum, updateAlbum } from '@/lib/actions';
 import type { Album } from '@/lib/definitions';
 import { Input } from '@/components/ui/input';
@@ -23,7 +24,7 @@ export default function AlbumForm({ album }: { album?: Album }) {
   const isEditing = !!album;
   const action = isEditing ? updateAlbum : createAlbum;
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(action, initialState);
+  const [state, dispatch] = useActionState(action, initialState);
 
   return (
     <Card className="max-w-2xl mx-auto">
