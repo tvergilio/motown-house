@@ -2,14 +2,13 @@ import { fetchAlbums } from '@/lib/data';
 import AlbumCard from '@/components/album-card';
 import Search from '@/components/search';
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams?: {
+export default async function Home(props: {
+  searchParams?: Promise<{
     query?: string;
     page?: string;
-  };
+  }>;
 }) {
+  const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
   const albums = await fetchAlbums(query);
 

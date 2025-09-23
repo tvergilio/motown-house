@@ -6,7 +6,8 @@ import { CalendarIcon, Edit, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import DeleteAlbumButton from '@/components/delete-album-button';
 
-export default async function AlbumDetailPage({ params }: { params: { id: string } }) {
+export default async function AlbumDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const album = await fetchAlbumById(params.id);
 
   if (!album) {
