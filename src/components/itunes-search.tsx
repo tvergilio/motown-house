@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -36,6 +36,27 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
   const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
   const [lastSearchTerm, setLastSearchTerm] = useState('');
 
+  const getCachedImageUrl = (originalUrl: string) => {
+    if (!originalUrl) return '';
+    // Use our image proxy for caching
+    return `/api/image-proxy?url=${encodeURIComponent(originalUrl.replace('100x100bb.jpg', '300x300bb.jpg'))}`;
+  };
+
+  // Set loading state for images when results change
+  useEffect(() => {
+    if (results.length > 0) {
+      setLoadingImages(prev => {
+        const newSet = new Set(prev);
+        results.forEach(album => {
+          if (album.image_url && !failedImages.has(album.image_url)) {
+            newSet.add(album.image_url);
+          }
+        });
+        return newSet;
+      });
+    }
+  }, [results, failedImages]);
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -63,12 +84,6 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getCachedImageUrl = (originalUrl: string) => {
-    if (!originalUrl) return '';
-    // Use our image proxy for caching
-    return `/api/image-proxy?url=${encodeURIComponent(originalUrl.replace('100x100bb.jpg', '300x300bb.jpg'))}`;
   };
 
   const handleSelectAlbum = (iTunesAlbum: iTunesAlbum) => {
@@ -182,11 +197,12 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
                             width={80}
                             height={80}
                             className="object-cover w-full h-full"
-                            onLoadStart={() => {
-                              setLoadingImages(prev => new Set(prev).add(album.image_url));
-                            }}
                             onError={() => {
-                              setFailedImages(prev => new Set(prev).add(album.image_url));
+                              setFailedImages(prev => {
+                                const newSet = new Set(prev);
+                                newSet.add(album.image_url);
+                                return newSet;
+                              });
                               setLoadingImages(prev => {
                                 const newSet = new Set(prev);
                                 newSet.delete(album.image_url);
