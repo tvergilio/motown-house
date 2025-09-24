@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Search, Plus, AlertTriangle } from 'lucide-react';
+import { Search, Plus, AlertTriangle, Music } from 'lucide-react';
 import { searchItunes, type iTunesAlbum } from '@/lib/data';
 import { GENRES, type Genre } from '@/lib/definitions';
 import Image from 'next/image';
@@ -32,12 +32,20 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
+  const [lastSearchTerm, setLastSearchTerm] = useState('');
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!searchTerm.trim()) {
       setError('Please enter a search term');
+      return;
+    }
+
+    // Skip if same search as last time and we have results
+    if (searchTerm.trim() === lastSearchTerm && results.length > 0) {
       return;
     }
 
@@ -48,12 +56,19 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
     try {
       const searchResults = await searchItunes(searchTerm);
       setResults(searchResults);
+      setLastSearchTerm(searchTerm.trim());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed');
       setResults([]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getCachedImageUrl = (originalUrl: string) => {
+    if (!originalUrl) return '';
+    // Use our image proxy for caching
+    return `/api/image-proxy?url=${encodeURIComponent(originalUrl.replace('100x100bb.jpg', '300x300bb.jpg'))}`;
   };
 
   const handleSelectAlbum = (iTunesAlbum: iTunesAlbum) => {
@@ -75,7 +90,8 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
       year: iTunesAlbum.year,
       price: iTunesAlbum.price,
       genre: mappedGenre,
-      imageUrl: iTunesAlbum.image_url.replace('100x100bb.jpg', '600x600bb.jpg'),
+      // Use our cached image proxy
+      imageUrl: getCachedImageUrl(iTunesAlbum.image_url),
     };
 
     onSelectAlbum(albumData);
@@ -152,19 +168,49 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
                 <CardContent className="p-4">
                   <div className="flex gap-4 items-start">
                     {/* Album Cover */}
-                    <div className="w-20 h-20 rounded overflow-hidden flex-shrink-0">
-                      {album.image_url ? (
-                        <Image
-                          src={album.image_url}
-                          alt={`${album.title} cover`}
-                          width={80}
-                          height={80}
-                          className="object-cover w-full h-full"
-                          onError={() => console.error('Failed to load image:', album.image_url)}
-                        />
+                    <div className="w-20 h-20 rounded overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center relative">
+                      {album.image_url && !failedImages.has(album.image_url) ? (
+                        <>
+                          {loadingImages.has(album.image_url) && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                              <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                          )}
+                          <img
+                            src={getCachedImageUrl(album.image_url)}
+                            alt={`${album.title} cover`}
+                            width={80}
+                            height={80}
+                            className="object-cover w-full h-full"
+                            onLoadStart={() => {
+                              setLoadingImages(prev => new Set(prev).add(album.image_url));
+                            }}
+                            onError={() => {
+                              setFailedImages(prev => new Set(prev).add(album.image_url));
+                              setLoadingImages(prev => {
+                                const newSet = new Set(prev);
+                                newSet.delete(album.image_url);
+                                return newSet;
+                              });
+                            }}
+                            onLoad={() => {
+                              setLoadingImages(prev => {
+                                const newSet = new Set(prev);
+                                newSet.delete(album.image_url);
+                                return newSet;
+                              });
+                              setFailedImages(prev => {
+                                const newSet = new Set(prev);
+                                newSet.delete(album.image_url);
+                                return newSet;
+                              });
+                            }}
+                          />
+                        </>
                       ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
-                          No Image
+                        <div className="w-full h-full bg-muted flex flex-col items-center justify-center text-xs text-muted-foreground">
+                          <Music className="w-6 h-6 mb-1" />
+                          <span>No Image</span>
                         </div>
                       )}
                     </div>

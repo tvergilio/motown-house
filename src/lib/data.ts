@@ -54,7 +54,16 @@ export async function fetchAlbums(query?: string): Promise<Album[]> {
       );
     }
     
-    return filteredAlbums.map(transformAlbumData);
+    // Sort albums alphabetically by artist, then by title
+    const sortedAlbums = filteredAlbums.sort((a, b) => {
+      const artistComparison = a.artist.localeCompare(b.artist, undefined, { sensitivity: 'base' });
+      if (artistComparison !== 0) {
+        return artistComparison;
+      }
+      return a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+    });
+    
+    return sortedAlbums.map(transformAlbumData);
   } catch (error) {
     console.error('Failed to fetch albums:', error);
     if (error instanceof ApiError) {
@@ -140,14 +149,41 @@ export type iTunesAlbum = {
   image_url: string;
 };
 
+// Simple in-memory cache for search results
+const searchCache = new Map<string, { results: iTunesAlbum[]; timestamp: number }>();
+const SEARCH_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
 export async function searchItunes(term: string): Promise<iTunesAlbum[]> {
   try {
     if (!term || term.trim() === '') {
       throw new Error('Search term is required');
     }
     
+    // Normalize the search term for consistent caching
+    const normalizedTerm = term.trim().toLowerCase();
+    
+    // Check cache first
+    const cached = searchCache.get(normalizedTerm);
+    if (cached && Date.now() - cached.timestamp < SEARCH_CACHE_DURATION) {
+      console.log(`Cache hit for search: "${term}"`);
+      return cached.results;
+    }
+    
+    console.log(`Cache miss for search: "${term}", fetching from API`);
     const response = await apiRequest(`/api/search?term=${encodeURIComponent(term)}`);
     const results = await parseJsonResponse<iTunesAlbum[]>(response);
+    
+    // Cache the results
+    searchCache.set(normalizedTerm, {
+      results,
+      timestamp: Date.now(),
+    });
+    
+    // Clean up old cache entries (keep only last 100 searches)
+    if (searchCache.size > 100) {
+      const oldestKey = Array.from(searchCache.keys())[0];
+      searchCache.delete(oldestKey);
+    }
     
     return results;
   } catch (error) {

@@ -56,7 +56,7 @@ export async function createAlbum(prevState: FormState, formData: FormData) {
   }
 
   revalidatePath('/');
-  redirect('/');
+  redirect('/?success=album-added');
 }
 
 export async function updateAlbum(prevState: FormState, formData: FormData) {
