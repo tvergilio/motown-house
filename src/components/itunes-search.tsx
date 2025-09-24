@@ -33,7 +33,6 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
   const [error, setError] = useState<string>('');
   const [hasSearched, setHasSearched] = useState(false);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
-  const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
   const [lastSearchTerm, setLastSearchTerm] = useState('');
 
   const getCachedImageUrl = (originalUrl: string) => {
@@ -41,21 +40,6 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
     // Use our image proxy for caching
     return `/api/image-proxy?url=${encodeURIComponent(originalUrl.replace('100x100bb.jpg', '300x300bb.jpg'))}`;
   };
-
-  // Set loading state for images when results change
-  useEffect(() => {
-    if (results.length > 0) {
-      setLoadingImages(prev => {
-        const newSet = new Set(prev);
-        results.forEach(album => {
-          if (album.image_url && !failedImages.has(album.image_url)) {
-            newSet.add(album.image_url);
-          }
-        });
-        return newSet;
-      });
-    }
-  }, [results, failedImages]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,46 +167,22 @@ export default function iTunesSearch({ onSelectAlbum }: iTunesSearchProps) {
                 <CardContent className="p-4">
                   <div className="flex gap-4 items-start">
                     {/* Album Cover */}
-                    <div className="w-20 h-20 rounded overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center relative">
+                    <div className="w-20 h-20 rounded overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center">
                       {album.image_url && !failedImages.has(album.image_url) ? (
-                        <>
-                          {loadingImages.has(album.image_url) && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                              <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin"></div>
-                            </div>
-                          )}
-                          <img
-                            src={getCachedImageUrl(album.image_url)}
-                            alt={`${album.title} cover`}
-                            width={80}
-                            height={80}
-                            className="object-cover w-full h-full"
-                            onError={() => {
-                              setFailedImages(prev => {
-                                const newSet = new Set(prev);
-                                newSet.add(album.image_url);
-                                return newSet;
-                              });
-                              setLoadingImages(prev => {
-                                const newSet = new Set(prev);
-                                newSet.delete(album.image_url);
-                                return newSet;
-                              });
-                            }}
-                            onLoad={() => {
-                              setLoadingImages(prev => {
-                                const newSet = new Set(prev);
-                                newSet.delete(album.image_url);
-                                return newSet;
-                              });
-                              setFailedImages(prev => {
-                                const newSet = new Set(prev);
-                                newSet.delete(album.image_url);
-                                return newSet;
-                              });
-                            }}
-                          />
-                        </>
+                        <img
+                          src={getCachedImageUrl(album.image_url)}
+                          alt={`${album.title} cover`}
+                          width={80}
+                          height={80}
+                          className="object-cover w-full h-full"
+                          onError={() => {
+                            setFailedImages(prev => {
+                              const newSet = new Set(prev);
+                              newSet.add(album.image_url);
+                              return newSet;
+                            });
+                          }}
+                        />
                       ) : (
                         <div className="w-full h-full bg-muted flex flex-col items-center justify-center text-xs text-muted-foreground">
                           <Music className="w-6 h-6 mb-1" />
