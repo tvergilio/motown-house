@@ -15,7 +15,7 @@ export default async function Home(props: {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold">The Motown Collection</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold">The Soul and Motown Collection</h1>
         <p className="text-lg text-muted-foreground">Browse our curated collection of classic vinyl records.</p>
       </div>
 
