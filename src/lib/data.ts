@@ -129,3 +129,38 @@ export async function deleteAlbum(id: string): Promise<{ success: boolean }> {
     throw new Error('Failed to delete album via API');
   }
 }
+
+// iTunes Search Types - Updated to match your API response
+export type iTunesAlbum = {
+  title: string;
+  artist: string;
+  price: number;
+  year: number;
+  genre: string;
+  image_url: string;
+};
+
+export async function searchItunes(term: string): Promise<iTunesAlbum[]> {
+  try {
+    if (!term || term.trim() === '') {
+      throw new Error('Search term is required');
+    }
+    
+    const response = await apiRequest(`/api/search?term=${encodeURIComponent(term)}`);
+    const results = await parseJsonResponse<iTunesAlbum[]>(response);
+    
+    return results;
+  } catch (error) {
+    console.error('Failed to search iTunes:', error);
+    if (error instanceof ApiError) {
+      if (error.status === 400) {
+        throw new Error('Please enter a search term');
+      }
+      if (error.status === 502) {
+        throw new Error('iTunes unavailable, please try later');
+      }
+      throw new Error(`iTunes search failed: ${error.message}`);
+    }
+    throw new Error('Failed to search iTunes');
+  }
+}
