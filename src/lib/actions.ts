@@ -9,7 +9,7 @@ const AlbumSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1, 'Title is required.'),
   artist: z.string().min(1, 'Artist is required.'),
-  year: z.coerce.number().min(1900, 'Invalid year.').max(new Date().getFullYear() + 1, 'Invalid year.'),
+  year: z.coerce.number().int().min(1900, 'Invalid year.').max(new Date().getFullYear() + 1, 'Invalid year.'),
   price: z.coerce.number().min(0, 'Price must be positive.'),
 });
 
