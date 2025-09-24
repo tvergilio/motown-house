@@ -112,14 +112,19 @@ src/
 
 ## Backend Setup
 
-This frontend requires a backend API that implements the album CRUD operations. Based on the integration tests provided, the backend should be a Go application using:
+This frontend requires a backend API that implements the album CRUD operations. The backend is a Go web service built with Gin framework.
 
-- HTTP REST API
-- PostgreSQL database
-- CRUD operations for albums
-- Running on port 8080
+### 🔗 Backend Repository
+**Go Backend API**: [https://github.com/tvergilio/web-service-gin](https://github.com/tvergilio/web-service-gin)
 
-Example backend test structure suggests endpoints like:
+### Backend Features
+- **Framework**: Go with Gin web framework
+- **Database**: PostgreSQL
+- **CRUD Operations**: Full album management
+- **Port**: 8080 (default)
+- **CORS**: Required for frontend integration
+
+### Required API Endpoints
 ```go
 // GET /albums - GetAll()
 // GET /albums/:id - GetByID(id)  
@@ -127,6 +132,15 @@ Example backend test structure suggests endpoints like:
 // PUT /albums/:id - Update(id, album)
 // DELETE /albums/:id - Delete(id)
 ```
+
+### Quick Backend Setup
+1. Clone the backend repository:
+   ```bash
+   git clone https://github.com/tvergilio/web-service-gin.git
+   ```
+2. Follow the setup instructions in the backend README
+3. Ensure the API is running on `localhost:8080`
+4. Configure CORS to allow `http://localhost:9002` (frontend URL)
 
 ## Troubleshooting
 
