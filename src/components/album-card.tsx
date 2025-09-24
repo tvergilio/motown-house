@@ -21,6 +21,7 @@ export default function AlbumCard({ album }: { album: Album }) {
           <div className="p-4 bg-card">
             <h3 className="font-headline font-semibold text-lg truncate">{album.title}</h3>
             <p className="text-muted-foreground text-sm">{album.artist}</p>
+            <p className="text-muted-foreground text-xs mt-1">{album.genre}</p>
             <p className="font-semibold mt-2 text-foreground">${album.price.toFixed(2)}</p>
           </div>
         </CardContent>

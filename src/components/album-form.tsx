@@ -4,10 +4,12 @@ import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { createAlbum, updateAlbum } from '@/lib/actions';
 import type { Album } from '@/lib/definitions';
+import { GENRES } from '@/lib/definitions';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Link from 'next/link';
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
@@ -23,7 +25,7 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
 export default function AlbumForm({ album }: { album?: Album }) {
   const isEditing = !!album;
   const action = isEditing ? updateAlbum : createAlbum;
-  const initialState = { message: null, errors: {} };
+  const initialState = { message: '', errors: {} };
   const [state, dispatch] = useActionState(action, initialState);
 
   return (
@@ -51,6 +53,27 @@ export default function AlbumForm({ album }: { album?: Album }) {
                     <Input id="artist" name="artist" placeholder="e.g., Marvin Gaye" defaultValue={album?.artist} aria-describedby="artist-error" />
                     <div id="artist-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.artist && state.errors.artist.map((error: string) => (
+                            <p className="mt-2 text-sm text-destructive" key={error}>{error}</p>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="genre">Genre</Label>
+                    <Select name="genre" defaultValue={album?.genre}>
+                        <SelectTrigger id="genre" aria-describedby="genre-error">
+                            <SelectValue placeholder="Select a genre" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {GENRES.map((genre) => (
+                                <SelectItem key={genre} value={genre}>
+                                    {genre}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <div id="genre-error" aria-live="polite" aria-atomic="true">
+                        {state.errors?.genre && state.errors.genre.map((error: string) => (
                             <p className="mt-2 text-sm text-destructive" key={error}>{error}</p>
                         ))}
                     </div>

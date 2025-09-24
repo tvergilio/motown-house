@@ -2,7 +2,7 @@ import { fetchAlbumById } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, Edit, DollarSign } from 'lucide-react';
+import { CalendarIcon, Edit, DollarSign, Music } from 'lucide-react';
 import Link from 'next/link';
 import DeleteAlbumButton from '@/components/delete-album-button';
 
@@ -37,6 +37,10 @@ export default async function AlbumDetailPage(props: { params: Promise<{ id: str
             <div className="flex items-center gap-3">
               <CalendarIcon className="w-5 h-5 text-muted-foreground" />
               <span>Released in {album.year}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Music className="w-5 h-5 text-muted-foreground" />
+              <span>{album.genre}</span>
             </div>
             <div className="flex items-center gap-3">
               <DollarSign className="w-5 h-5 text-muted-foreground" />

@@ -58,9 +58,22 @@ This application expects a REST API running on `localhost:8080` with the followi
   "artist": "string", 
   "year": "number",
   "price": "number",
+  "genre": "string",
   "coverImageUrl": "string (optional)"
 }
 ```
+
+### Genre Options
+
+The genre field accepts one of the following values:
+- `"Soul"`
+- `"R&B/Soul"`
+- `"Motown"`
+- `"Pop"`
+- `"Rock"`
+- `"Funk"`
+- `"Disco"`
+- `"Other"` (fallback for any other genre)
 
 ### API Error Handling
 

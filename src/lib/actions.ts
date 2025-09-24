@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import { createAlbum as apiCreateAlbum, updateAlbum as apiUpdateAlbum, deleteAlbum as apiDeleteAlbum } from '@/lib/data';
+import { GENRES } from '@/lib/definitions';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -11,6 +12,7 @@ const AlbumSchema = z.object({
   artist: z.string().min(1, 'Artist is required.'),
   year: z.coerce.number().int().min(1900, 'Invalid year.').max(new Date().getFullYear() + 1, 'Invalid year.'),
   price: z.coerce.number().min(0, 'Price must be positive.'),
+  genre: z.enum(GENRES, { required_error: 'Please select a genre.' }),
 });
 
 export type FormState = {
@@ -19,8 +21,9 @@ export type FormState = {
     artist?: string[];
     year?: string[];
     price?: string[];
+    genre?: string[];
   };
-  message?: string | null;
+  message?: string;
 };
 
 export async function createAlbum(prevState: FormState, formData: FormData) {
@@ -29,6 +32,7 @@ export async function createAlbum(prevState: FormState, formData: FormData) {
     artist: formData.get('artist'),
     year: formData.get('year'),
     price: formData.get('price'),
+    genre: formData.get('genre'),
   });
 
   if (!validatedFields.success) {
@@ -61,6 +65,7 @@ export async function updateAlbum(prevState: FormState, formData: FormData) {
     artist: formData.get('artist'),
     year: formData.get('year'),
     price: formData.get('price'),
+    genre: formData.get('genre'),
   });
 
   if (!validatedFields.success) {

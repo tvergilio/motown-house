@@ -13,10 +13,11 @@ function generateCoverImageUrl(albumId: string, title: string): string {
   return `https://picsum.photos/seed/${seed}/500/500`;
 }
 
-// Transform API album data to include cover image if missing
+// Transform API album data to include cover image if missing and set default genre
 function transformAlbumData(album: any): Album {
   return {
     ...album,
+    genre: album.genre || 'Other', // Default to 'Other' if genre is missing
     coverImageUrl: album.coverImageUrl || generateCoverImageUrl(album.id, album.title),
   };
 }
