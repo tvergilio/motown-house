@@ -46,32 +46,36 @@ export default function AlbumForm({ album, prefilledData }: AlbumFormProps) {
             <CardDescription>{isEditing ? 'Update the details of this classic record.' : 'Add another gem to the collection.'}</CardDescription>
         </CardHeader>
         <CardContent>
-            {/* Album Preview from iTunes */}
-            {prefilledData?.imageUrl && (
+            {/* Album Preview */}
+            {defaultValues && (
                 <div className="mb-6 p-4 bg-muted/50 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-4">Selected from iTunes</h3>
+                    <h3 className="text-lg font-semibold mb-4">
+                        {prefilledData ? 'Selected from iTunes' : 'Current Album'}
+                    </h3>
                     <div className="flex gap-6 items-start">
                         <div className="w-32 h-32 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
                             <Image
-                                src={prefilledData.imageUrl}
-                                alt={`${prefilledData.title} cover`}
+                                src={defaultValues?.imageUrl || ''}
+                                alt={`${defaultValues?.title || 'Album'} cover`}
                                 width={128}
                                 height={128}
                                 className="object-cover w-full h-full"
                             />
                         </div>
                         <div className="flex-1 space-y-2">
-                            <h4 className="text-xl font-bold">{prefilledData.title}</h4>
-                            <p className="text-lg text-muted-foreground">{prefilledData.artist}</p>
+                            <h4 className="text-xl font-bold">{defaultValues?.title}</h4>
+                            <p className="text-lg text-muted-foreground">{defaultValues?.artist}</p>
                             <div className="flex gap-3 text-sm text-muted-foreground">
-                                <span>Year: {prefilledData.year}</span>
+                                <span>Year: {defaultValues?.year}</span>
                                 <span>•</span>
-                                <span>Genre: {prefilledData.genre}</span>
+                                <span>Genre: {defaultValues?.genre}</span>
                                 <span>•</span>
-                                <span>Price: ${prefilledData.price.toFixed(2)}</span>
+                                <span>Price: ${defaultValues?.price?.toFixed(2)}</span>
                             </div>
                             <p className="text-sm text-green-700 dark:text-green-400">
-                                Review and modify the details below, then save to add this album to the shop.
+                                {prefilledData 
+                                    ? 'Review and modify the details below, then save to add this album to the shop.' 
+                                    : 'Review and modify the details below to update this album.'}
                             </p>
                         </div>
                     </div>
@@ -80,7 +84,11 @@ export default function AlbumForm({ album, prefilledData }: AlbumFormProps) {
 
             <form action={dispatch} className="space-y-6">
                 {isEditing && <input type="hidden" name="id" value={album.id} />}
-                {prefilledData?.imageUrl && <input type="hidden" name="imageUrl" value={prefilledData.imageUrl} />}
+                <input 
+                    type="hidden" 
+                    name="imageUrl" 
+                    value={defaultValues?.imageUrl || ''} 
+                />
                 
                 <div className="space-y-2">
                     <Label htmlFor="title">Title</Label>
