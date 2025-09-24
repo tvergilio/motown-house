@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Album } from '@/lib/definitions';
 import { Card, CardContent } from '@/components/ui/card';
+import { Music } from 'lucide-react';
 
 export default function AlbumCard({ album }: { album: Album }) {
   return (
@@ -9,14 +10,21 @@ export default function AlbumCard({ album }: { album: Album }) {
       <Card className="overflow-hidden transition-all duration-300 group-hover:shadow-xl group-hover:border-accent">
         <CardContent className="p-0">
           <div className="aspect-square relative">
-            <Image
-              src={album.coverImageUrl}
-              alt={`Cover art for ${album.title}`}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              data-ai-hint="vinyl record"
-            />
+            {album.imageUrl ? (
+              <Image
+                src={album.imageUrl}
+                alt={`Cover art for ${album.title}`}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                data-ai-hint="vinyl record"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted flex flex-col items-center justify-center">
+                <Music className="w-12 h-12 text-muted-foreground mb-2" />
+                <span className="text-muted-foreground text-xs">No Image</span>
+              </div>
+            )}
           </div>
           <div className="p-4 bg-card">
             <h3 className="font-headline font-semibold text-lg truncate">{album.title}</h3>

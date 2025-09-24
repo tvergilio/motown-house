@@ -18,14 +18,21 @@ export default async function AlbumDetailPage(props: { params: Promise<{ id: str
     <div className="max-w-4xl mx-auto">
       <div className="grid md:grid-cols-2 gap-8 md:gap-12">
         <div className="aspect-square relative rounded-lg overflow-hidden shadow-lg">
-          <Image
-            src={album.coverImageUrl}
-            alt={`Cover art for ${album.title}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            data-ai-hint="vinyl record"
-          />
+          {album.imageUrl ? (
+            <Image
+              src={album.imageUrl}
+              alt={`Cover art for ${album.title}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              data-ai-hint="vinyl record"
+            />
+          ) : (
+            <div className="w-full h-full bg-muted flex flex-col items-center justify-center">
+              <Music className="w-16 h-16 text-muted-foreground mb-3" />
+              <span className="text-muted-foreground">No Image Available</span>
+            </div>
+          )}
         </div>
         <div className="flex flex-col space-y-6">
           <div>
@@ -54,7 +61,7 @@ export default async function AlbumDetailPage(props: { params: Promise<{ id: str
                 <Edit className="mr-2 h-4 w-4" /> Edit
               </Link>
             </Button>
-            <DeleteAlbumButton id={album.id} />
+            <DeleteAlbumButton id={album.id.toString()} />
           </div>
         </div>
       </div>

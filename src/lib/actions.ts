@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 const AlbumSchema = z.object({
-  id: z.string().optional(),
+  id: z.coerce.number().int().optional(),
   title: z.string().min(1, 'Title is required.'),
   artist: z.string().min(1, 'Artist is required.'),
   year: z.coerce.number().int().min(1900, 'Invalid year.').max(new Date().getFullYear() + 1, 'Invalid year.'),

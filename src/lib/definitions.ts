@@ -12,11 +12,11 @@ export const GENRES = [
 export type Genre = typeof GENRES[number];
 
 export type Album = {
-  id: string;
+  id: number;
   title: string;
   artist: string;
   year: number;
   price: number;
   genre: Genre;
-  coverImageUrl: string;
+  imageUrl: string;
 };

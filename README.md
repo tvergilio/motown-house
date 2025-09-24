@@ -53,15 +53,22 @@ This application expects a REST API running on `localhost:8080` with the followi
 
 ```json
 {
-  "id": "string",
+  "id": "number",
   "title": "string",
   "artist": "string", 
   "year": "number",
   "price": "number",
   "genre": "string",
-  "coverImageUrl": "string (optional)"
+  "imageUrl": "string"
 }
 ```
+
+### Image URL Transformation
+
+The frontend automatically transforms image URLs to higher resolution:
+- Apple Music URLs: `60x60bb.jpg` → `600x600bb.jpg`  
+- Other dimension patterns are automatically scaled to 600x600
+- Example: `https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/.../60x60bb.jpg` becomes `https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/.../600x600bb.jpg`
 
 ### Genre Options
 

@@ -1,24 +1,37 @@
 import type { Album } from './definitions';
-import { PlaceHolderImages } from './placeholder-images';
 import { apiRequest, parseJsonResponse, ApiError } from './api-client';
 
-// Helper function to generate cover image URL for albums without one
-function generateCoverImageUrl(albumId: string, title: string): string {
-  const placeholderImage = PlaceHolderImages.find(img => img.id === `album-${albumId}`);
-  if (placeholderImage) {
-    return placeholderImage.imageUrl;
+// Helper function to transform image URL dimensions to high resolution
+function transformImageUrl(imageUrl: string): string {
+  // If no imageUrl provided, return empty string to trigger fallback UI
+  if (!imageUrl || imageUrl.trim() === '') {
+    return '';
   }
-  // Fallback to generated image based on title
-  const seed = title.toLowerCase().replace(/\s+/g, '');
-  return `https://picsum.photos/seed/${seed}/500/500`;
+  
+  // Transform Apple Music style URLs from various sizes to 600x600
+  if (imageUrl.includes('60x60bb.jpg')) {
+    return imageUrl.replace('60x60bb.jpg', '600x600bb.jpg');
+  }
+  
+  if (imageUrl.includes('100x100bb.jpg')) {
+    return imageUrl.replace('100x100bb.jpg', '600x600bb.jpg');
+  }
+  
+  // Handle other possible dimension patterns (e.g., 200x200, 300x300, etc.)
+  const dimensionPattern = /(\d+)x(\d+)(bb\.jpg)$/;
+  if (dimensionPattern.test(imageUrl)) {
+    return imageUrl.replace(dimensionPattern, '600x600$3');
+  }
+  
+  return imageUrl;
 }
 
-// Transform API album data to include cover image if missing and set default genre
+// Transform API album data and set defaults
 function transformAlbumData(album: any): Album {
   return {
     ...album,
     genre: album.genre || 'Other', // Default to 'Other' if genre is missing
-    coverImageUrl: album.coverImageUrl || generateCoverImageUrl(album.id, album.title),
+    imageUrl: transformImageUrl(album.imageUrl), // Transform image dimensions
   };
 }
 
@@ -65,7 +78,7 @@ export async function fetchAlbumById(id: string): Promise<Album | undefined> {
   }
 }
 
-export async function createAlbum(albumData: Omit<Album, 'id' | 'coverImageUrl'>): Promise<Album> {
+export async function createAlbum(albumData: Omit<Album, 'id' | 'imageUrl'>): Promise<Album> {
   try {
     const response = await apiRequest('/albums', {
       method: 'POST',
@@ -83,7 +96,7 @@ export async function createAlbum(albumData: Omit<Album, 'id' | 'coverImageUrl'>
   }
 }
 
-export async function updateAlbum(id: string, albumData: Partial<Omit<Album, 'id'>>): Promise<Album | undefined> {
+export async function updateAlbum(id: string, albumData: Partial<Omit<Album, 'id' | 'imageUrl'>>): Promise<Album | undefined> {
   try {
     const response = await apiRequest(`/albums/${id}`, {
       method: 'PUT',
