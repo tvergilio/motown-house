@@ -5,12 +5,15 @@ import { useFormStatus } from 'react-dom';
 import { createAlbum, updateAlbum } from '@/lib/actions';
 import type { Album } from '@/lib/definitions';
 import { GENRES } from '@/lib/definitions';
+import type { iTunesSearchResult } from '@/components/itunes-search';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Music } from 'lucide-react';
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -22,11 +25,19 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
   );
 }
 
-export default function AlbumForm({ album }: { album?: Album }) {
+interface AlbumFormProps {
+  album?: Album;
+  prefilledData?: iTunesSearchResult | null;
+}
+
+export default function AlbumForm({ album, prefilledData }: AlbumFormProps) {
   const isEditing = !!album;
   const action = isEditing ? updateAlbum : createAlbum;
   const initialState = { message: '', errors: {} };
   const [state, dispatch] = useActionState(action, initialState);
+
+  // Use prefilled data or album data for default values
+  const defaultValues = prefilledData || album;
 
   return (
     <Card className="max-w-2xl mx-auto">
@@ -35,12 +46,45 @@ export default function AlbumForm({ album }: { album?: Album }) {
             <CardDescription>{isEditing ? 'Update the details of this classic record.' : 'Add another gem to the collection.'}</CardDescription>
         </CardHeader>
         <CardContent>
+            {/* Album Preview from iTunes */}
+            {prefilledData?.imageUrl && (
+                <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="text-lg font-semibold mb-4">Selected from iTunes</h3>
+                    <div className="flex gap-6 items-start">
+                        <div className="w-32 h-32 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
+                            <Image
+                                src={prefilledData.imageUrl}
+                                alt={`${prefilledData.title} cover`}
+                                width={128}
+                                height={128}
+                                className="object-cover w-full h-full"
+                            />
+                        </div>
+                        <div className="flex-1 space-y-2">
+                            <h4 className="text-xl font-bold">{prefilledData.title}</h4>
+                            <p className="text-lg text-muted-foreground">{prefilledData.artist}</p>
+                            <div className="flex gap-3 text-sm text-muted-foreground">
+                                <span>Year: {prefilledData.year}</span>
+                                <span>•</span>
+                                <span>Genre: {prefilledData.genre}</span>
+                                <span>•</span>
+                                <span>Price: ${prefilledData.price.toFixed(2)}</span>
+                            </div>
+                            <p className="text-sm text-green-700 dark:text-green-400">
+                                Review and modify the details below, then save to add this album to the shop.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <form action={dispatch} className="space-y-6">
                 {isEditing && <input type="hidden" name="id" value={album.id} />}
+                {prefilledData?.imageUrl && <input type="hidden" name="imageUrl" value={prefilledData.imageUrl} />}
                 
                 <div className="space-y-2">
                     <Label htmlFor="title">Title</Label>
-                    <Input id="title" name="title" placeholder="e.g., What's Going On" defaultValue={album?.title} aria-describedby="title-error" />
+                    <Input id="title" name="title" placeholder="e.g., What's Going On" defaultValue={defaultValues?.title} aria-describedby="title-error" />
                     <div id="title-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.title && state.errors.title.map((error: string) => (
                             <p className="mt-2 text-sm text-destructive" key={error}>{error}</p>
@@ -50,7 +94,7 @@ export default function AlbumForm({ album }: { album?: Album }) {
 
                 <div className="space-y-2">
                     <Label htmlFor="artist">Artist</Label>
-                    <Input id="artist" name="artist" placeholder="e.g., Marvin Gaye" defaultValue={album?.artist} aria-describedby="artist-error" />
+                    <Input id="artist" name="artist" placeholder="e.g., Marvin Gaye" defaultValue={defaultValues?.artist} aria-describedby="artist-error" />
                     <div id="artist-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.artist && state.errors.artist.map((error: string) => (
                             <p className="mt-2 text-sm text-destructive" key={error}>{error}</p>
@@ -60,7 +104,7 @@ export default function AlbumForm({ album }: { album?: Album }) {
 
                 <div className="space-y-2">
                     <Label htmlFor="genre">Genre</Label>
-                    <Select name="genre" defaultValue={album?.genre}>
+                    <Select name="genre" defaultValue={defaultValues?.genre}>
                         <SelectTrigger id="genre" aria-describedby="genre-error">
                             <SelectValue placeholder="Select a genre" />
                         </SelectTrigger>
@@ -82,7 +126,7 @@ export default function AlbumForm({ album }: { album?: Album }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="year">Year</Label>
-                        <Input id="year" name="year" type="number" placeholder="e.g., 1971" defaultValue={album?.year} aria-describedby="year-error" />
+                        <Input id="year" name="year" type="number" placeholder="e.g., 1971" defaultValue={defaultValues?.year} aria-describedby="year-error" />
                          <div id="year-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.year && state.errors.year.map((error: string) => (
                                 <p className="mt-2 text-sm text-destructive" key={error}>{error}</p>
@@ -91,7 +135,7 @@ export default function AlbumForm({ album }: { album?: Album }) {
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="price">Price ($)</Label>
-                        <Input id="price" name="price" type="number" step="0.01" placeholder="e.g., 24.99" defaultValue={album?.price} aria-describedby="price-error" />
+                        <Input id="price" name="price" type="number" step="0.01" placeholder="e.g., 24.99" defaultValue={defaultValues?.price} aria-describedby="price-error" />
                          <div id="price-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.price && state.errors.price.map((error: string) => (
                                 <p className="mt-2 text-sm text-destructive" key={error}>{error}</p>

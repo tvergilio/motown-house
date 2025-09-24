@@ -13,6 +13,7 @@ const AlbumSchema = z.object({
   year: z.coerce.number().int().min(1900, 'Invalid year.').max(new Date().getFullYear() + 1, 'Invalid year.'),
   price: z.coerce.number().min(0, 'Price must be positive.'),
   genre: z.enum(GENRES, { required_error: 'Please select a genre.' }),
+  imageUrl: z.string().min(1, 'Image URL is required.'),
 });
 
 export type FormState = {
@@ -22,18 +23,22 @@ export type FormState = {
     year?: string[];
     price?: string[];
     genre?: string[];
+    imageUrl?: string[];
   };
   message?: string;
 };
 
 export async function createAlbum(prevState: FormState, formData: FormData) {
-  const validatedFields = AlbumSchema.safeParse({
+  const albumData = {
     title: formData.get('title'),
     artist: formData.get('artist'),
     year: formData.get('year'),
     price: formData.get('price'),
     genre: formData.get('genre'),
-  });
+    imageUrl: formData.get('imageUrl'),
+  };
+  
+  const validatedFields = AlbumSchema.safeParse(albumData);
 
   if (!validatedFields.success) {
     return {
@@ -60,13 +65,16 @@ export async function updateAlbum(prevState: FormState, formData: FormData) {
     return { message: 'ID missing. Failed to update album.' };
   }
 
-  const validatedFields = AlbumSchema.safeParse({
+  const albumData = {
     title: formData.get('title'),
     artist: formData.get('artist'),
     year: formData.get('year'),
     price: formData.get('price'),
     genre: formData.get('genre'),
-  });
+    imageUrl: formData.get('imageUrl'),
+  };
+  
+  const validatedFields = AlbumSchema.safeParse(albumData);
 
   if (!validatedFields.success) {
     return {
