@@ -28,7 +28,6 @@ export default function RootLayout({
         </main>
         <footer className="py-4 border-t">
             <div className="container mx-auto text-center text-muted-foreground flex flex-col items-center gap-2">
-                <Image src="https://storage.googleapis.com/aai-web-samples/parrotlet.png" alt="Blue Parrotlet" width={40} height={40} className="rounded-full" />
                 <p>&copy; {new Date().getFullYear()} Motown House. All Rights Reserved.</p>
             </div>
         </footer>
