@@ -1,0 +1,58 @@
+sequenceDiagram
+    participant User
+    participant Pages as App Router Pages
+    participant Components as React Components
+    participant DataLayer as Data Layer
+    participant SearchCache as Search Cache
+    participant Backend as Backend API
+    participant ImageProxy as Image Proxy
+    participant ImageCache as Image Cache
+    participant AppleCDN as Apple Music CDN
+
+    Note over User, AppleCDN: Browse Albums Flow
+    User->>Pages: Navigate to home page
+    Pages->>DataLayer: fetchAlbums()
+    DataLayer->>Backend: GET /albums
+    Backend-->>DataLayer: Album data with imageUrls
+    DataLayer-->>Pages: Transformed albums
+    Pages->>Components: Render album grid
+    Components->>ImageProxy: Request album images
+    ImageProxy->>ImageCache: Check cache
+    alt Cache Hit
+        ImageCache-->>ImageProxy: Cached image
+    else Cache Miss
+        ImageProxy->>AppleCDN: Fetch from mzstatic.com
+        AppleCDN-->>ImageProxy: Image data
+        ImageProxy->>ImageCache: Store in cache
+    end
+    ImageProxy-->>Components: Serve image
+    Components-->>User: Display albums
+
+    Note over User, AppleCDN: iTunes Search & Add Album Flow
+    User->>Components: Search iTunes catalogue
+    Components->>DataLayer: searchItunes(term)
+    DataLayer->>SearchCache: Check cache
+    alt Cache Hit
+        SearchCache-->>DataLayer: Cached results
+    else Cache Miss
+        DataLayer->>Backend: GET /api/search?term=...
+        Backend-->>DataLayer: iTunes search results
+        DataLayer->>SearchCache: Store results
+    end
+    DataLayer-->>Components: Search results with imageUrls
+    Components->>ImageProxy: Load iTunes images via proxy
+    ImageProxy->>AppleCDN: Fetch iTunes images
+    AppleCDN-->>ImageProxy: Image data
+    ImageProxy-->>Components: Serve images
+    Components-->>User: Display search results
+
+    User->>Components: Select album from iTunes
+    Components->>Pages: Navigate to add album form
+    Pages->>Components: Render form with prefilled data
+    User->>Components: Submit album form
+    Components->>Pages: Server Action (createAlbum)
+    Pages->>DataLayer: createAlbum(albumData)
+    DataLayer->>Backend: POST /albums
+    Backend-->>DataLayer: Success response
+    DataLayer-->>Pages: Album created
+    Pages-->>User: Redirect to home with success

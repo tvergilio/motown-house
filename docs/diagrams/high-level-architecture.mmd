@@ -1,0 +1,47 @@
+graph TB
+    %% Frontend Components
+    User[User]
+    
+    subgraph "Next.js Frontend Application"
+        Pages[App Router Pages<br/>SSR Components]
+        Components[React Components<br/>Album Cards, Forms, Search UI]
+        ServerActions[Server Actions<br/>Form Processing with Zod]
+        ImageProxy[Image Proxy Route]
+        DataLayer[Data Layer<br/>API Client]
+        ImageCache[Server-side Image Cache]
+        SearchCache[Server-side Search Cache]
+    end
+    
+    %% External Dependencies
+    Backend[Backend API<br/>localhost:8080]
+    AppleCDN[Apple Music CDN<br/>mzstatic.com]
+    
+    %% Connections
+    User --> Pages
+    Pages --> Components
+    Components --> ServerActions
+    Components --> ImageProxy
+    ServerActions --> DataLayer
+    DataLayer --> Backend
+    ImageProxy --> ImageCache
+    ImageProxy --> AppleCDN
+    DataLayer --> SearchCache
+    
+    %% Styling
+    classDef pages fill:#e8f5e8
+    classDef components fill:#e3f2fd
+    classDef actions fill:#f3e5f5
+    classDef proxy fill:#fff3e0
+    classDef data fill:#fce4ec
+    classDef cache fill:#f0f4c3
+    classDef external fill:#ffebee
+    classDef user fill:#f1f8e9
+    
+    class Pages pages
+    class Components components
+    class ServerActions actions
+    class ImageProxy proxy
+    class DataLayer data
+    class ImageCache,SearchCache cache
+    class Backend,AppleCDN external
+    class User user
