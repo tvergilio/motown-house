@@ -53,6 +53,37 @@ git clone https://github.com/tvergilio/web-service-gin.git
 # Ensure it runs on localhost:8080 with CORS for localhost:9002
 ```
 
+## Docker
+
+### Using Pre-built Image from Docker Hub
+
+```bash
+# Pull and run the latest image
+docker run -p 3000:3000 tvergilio/motown-house:latest
+
+# Or run a specific version
+docker run -p 3000:3000 tvergilio/motown-house:1.0
+
+# Run in detached mode
+docker run -d -p 3000:3000 --name motown-house tvergilio/motown-house:latest
+```
+
+The app will be available at http://localhost:3000
+
+### Building Locally
+
+```bash
+# Build the Docker image
+npm run docker:build
+
+# Run the container
+npm run docker:run
+
+# Or use docker commands directly
+docker build -t motown-house .
+docker run -p 3000:3000 motown-house
+```
+
 ## Tech Stack
 
 - **Next.js 15** with TypeScript and App Router
